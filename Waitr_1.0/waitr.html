@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Waitr</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+    </style>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="script.js"type="text/javascript"></script>
+    <input id="pac-input" class="controls" type="text"
+        placeholder="Enter a location"
+        style="z-index: 0; position: absolute; left: 0px; top: 0px;">
+    <div id="map"></div>
+    <style>
+    @media (max-width: 460px) {
+      #pac-input {
+        width: 90%;
+      }
+    }
+    </style>
+
+
+
+    <div id="infowindow-content">
+      <span id="place-name"  class="title"></span><br>
+      Place ID <span id="place-id"></span><br>
+      <span id="place-address"></span>
+    </div>
+
+    <script>
+    function initMap() {
+      $('#right-panel').hide();
+     var map = new google.maps.Map(document.getElementById('map'), {
+       center: {lat: 39.5754, lng: -76.9958},
+       zoom: 13,
+       mapTypeControlOptions: {
+         mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID]
+       }, // here´s the array of controls
+       disableDefaultUI: true, // a way to quickly hide all controls
+       mapTypeControl: false
+     });
+     var input = document.getElementById('pac-input');
+     var autocomplete = new google.maps.places.Autocomplete(input);
+     autocomplete.bindTo('bounds', map);
+     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+     var infowindow = new google.maps.InfoWindow();
+     var infowindowContent = document.getElementById('infowindow-content');
+     infowindow.setContent(infowindowContent);
+     var marker = new google.maps.Marker({
+       map: map
+     });
+     marker.addListener('click', function() {
+       infowindow.open(map, marker);
+     });
+     autocomplete.addListener('place_changed', function() {
+       infowindow.close();
+       var place = autocomplete.getPlace();
+       if (!place.geometry) {
+         return;
+       }
+       if (place.geometry.viewport) {
+         map.fitBounds(place.geometry.viewport);
+       } else {
+         map.setCenter(place.geometry.location);
+         map.setZoom(17);
+       }
+       // Set the position of the marker using the place ID and location.
+       marker.setPlace({
+         placeId: place.place_id,
+         location: place.geometry.location
+       });
+       var place_name = place.name;
+       var phone = place.formatted_phone_number;
+       var address = place.formatted_address;
+       document.getElementById("name").innerHTML = place_name;
+       document.getElementById("phone_number").innerHTML = phone;
+       document.getElementById("address").innerHTML = address;
+       var place_id = place.place_id;
+       db_CHECK(place_id);
+
+
+     });
+
+     }
+
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUApqo8RjB5oLukR1jpSfPoWMF2tbrP20&libraries=places&callback=initMap"
+        async defer></script>
+
+  <div id='right-panel'>
+    <h2>
+
+    <style>
+      .fixed-ratio-resize { /* basic responsive img */
+      max-width: 100%;
+      height: auto;
+      width: auto\9; /* IE8 */
+      }
+      </style>
+
+      <img src="logo.jpg" class="fixed-ratio-resize" alt="some text">
+    </h2>
+
+    <form id="input_form">
+      <p>Party Size</p>
+      <select id="size_menu">
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="4+">4+</option>
+      </select>
+      <p>WaitTime in Minutes</p>
+      <select id="time_menu">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="30">30</option>
+        <option value="35">35</option>
+        <option value="40">40</option>
+        <option value="45">45</option>s
+        <option value="50">50</option>
+        <option value="55">55</option>
+        <option value="60">60</option>
+        <option value="90">90</option>
+        <option value="120">120</option>
+      </select>
+      <button title = "Submit" name="Submit" type="button" onclick="db_POST()">Submit</button>
+      <button title = "Back" name="Back" type="button" onclick="show_Data()">Go back</button>
+    </form>
+
+      <form id="data_form">
+      <p id="name"></p>
+      <p id="phone_number"></p>
+      <p id="address"></p>
+      <button title = "Show_Times" name="Show_Times" type="button" onclick="show_Time()">Submit Wait Time</button>
+      <button title = "Submit" name="Submit" type="button" onclick="show_wait_times()">View Wait Times</button>
+      </form>
+      <form id="wait_time_form">
+        <p>Wait Times:</p>
+        <p id="wait_time_2"></p>
+        <p id="wait_time_4"></p>
+        <p id="wait_time_4plus"></p>
+        <p id="Last_sync"></p>
+        <button title = "Submit" name="Submit" type="button" onclick="show_Data()">Go back</button>
+      </form>
+  </div>
+
+
+  </body>
+</html>
